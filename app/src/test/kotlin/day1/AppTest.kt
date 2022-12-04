@@ -4,14 +4,24 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AppTest {
-    @Test fun findsMostCalorificElf() {
+    @Test fun day1FindsMostCalorificElf() {
         val app = App()
-        val mostCalories = app.solve("1000\n2000\n3000\n\n4000\n\n5000\n6000\n\n7000\n8000\n9000\n\n10000\n")
+        val mostCalories = app.day1("1000\n2000\n3000\n\n4000\n\n5000\n6000\n\n7000\n8000\n9000\n\n10000\n")
 
         assertEquals(24000, mostCalories)
     }
 
-    @Test fun controlBreaksOnNewline() {
+    @Test
+    fun day2SumsTop3MostCalorificElves() {
+        val app = App()
+        val calories = app.day2("1000\n2000\n3000\n\n4000\n\n5000\n6000\n\n7000\n8000\n9000\n\n10000\n")
+
+        assertEquals(24000 + 11000 + 10000, calories)
+
+    }
+
+    @Test
+    fun controlBreaksOnNewline() {
         val app = App()
         val groups = app.groupByElf("1000\n2000\n3000\n\n4000\n\n5000\n6000\n\n7000\n8000\n9000\n\n10000\n")
 
@@ -23,7 +33,8 @@ class AppTest {
         assertEquals(listOf(10000), groups[4])
     }
 
-    @Test fun sumsEachElfCalories() {
+    @Test
+    fun sumsEachElfCalories() {
         val app  = App()
 
         val elfSums = app.sumByElf(listOf(listOf(1000, 2000, 3000), listOf(4000), listOf(5000, 6000), listOf(7000, 8000, 9000), listOf(10000)))
@@ -31,7 +42,8 @@ class AppTest {
         assertEquals(listOf(6000, 4000, 11000, 24000, 10000), elfSums)
     }
 
-    @Test fun sumsListCaloriesForOneElf() {
+    @Test
+    fun sumsListCaloriesForOneElf() {
         val app  = App()
         val calorieSum = app.sumCalories(listOf(1000, 2000, 3000))
 

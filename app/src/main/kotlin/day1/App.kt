@@ -3,11 +3,18 @@ package day1
 import java.io.File
 
 class App {
-    fun solve(calories: String): Int {
+    fun day1(calories: String): Int {
         val groups = groupByElf(calories)
         val sums = sumByElf(groups)
 
         return sums.maxOrNull()!!
+    }
+
+    fun day2(calories: String): Int {
+        val groups = groupByElf(calories)
+        val sums = sumByElf(groups)
+
+        return sums.sortedDescending().take(3).sum()
     }
 
     fun sumCalories(calories: List<Int>): Int {
@@ -27,5 +34,6 @@ class App {
 
 fun main() {
     val calorieList = File("input.txt").inputStream().readBytes().toString(Charsets.UTF_8)
-    println(App().solve(calorieList))
+    println(App().day1(calorieList))
+    println(App().day2(calorieList))
 }
