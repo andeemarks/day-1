@@ -1,8 +1,8 @@
-package day1
+package advent_of_code
 
 import java.io.File
 
-class App {
+class Day1 {
     fun day1(calories: String): Int {
         val groups = groupByElf(calories)
         val sums = sumByElf(groups)
@@ -34,6 +34,6 @@ class App {
 
 fun main() {
     val calorieList = File("input.txt").inputStream().readBytes().toString(Charsets.UTF_8)
-    println(App().day1(calorieList))
-    println(App().day2(calorieList))
+    println(Day1().day1(calorieList))
+    println(Day1().day2(calorieList))
 }
