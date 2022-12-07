@@ -11,7 +11,7 @@ class Day5Test {
     fun canMoveMultipleCratesBetweenStacks() {
         val stack1 = ArrayDeque(listOf("N", "Z"))
         val stack2 = ArrayDeque(listOf("D", "C", "M"))
-        Day5().moveCrates(2, stack1, stack2)
+        Day5().moveCratesV9000(2, stack1, stack2)
 
         assertTrue(stack1.isEmpty())
         assertEquals(listOf("Z", "N", "D", "C", "M"), stack2)

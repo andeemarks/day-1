@@ -8,7 +8,7 @@ class Day5(val input: List<String> = emptyList()) {
         toStack.addFirst(crate)
     }
 
-    fun moveCrates(numberOfCrates: Int, fromStack: ArrayDeque<String>, toStack: ArrayDeque<String>) {
+    fun moveCratesV9000(numberOfCrates: Int, fromStack: ArrayDeque<String>, toStack: ArrayDeque<String>) {
         repeat(numberOfCrates) {
             moveCrate(fromStack, toStack)
         }
@@ -85,7 +85,7 @@ private fun processStep(stepNumber: Int, day5: Day5, step: String, stacks: Map<S
     val crateCount = stepComponents.first
 
     try {
-        day5.moveCrates(crateCount, fromStack, toStack)
+        day5.moveCratesV9000(crateCount, fromStack, toStack)
     } catch (e: Exception) {
         println("Error attempting to execute ($stepNumber) $step on $fromStack and $toStack")
     }
