@@ -8,44 +8,55 @@ import kotlin.test.assertTrue
 class Day5Test {
 
     @Test
-    fun canMoveMultipleCratesBetweenStacks() {
-        val stack1 = ArrayDeque(listOf("N", "Z"))
-        val stack2 = ArrayDeque(listOf("D", "C", "M"))
-        Day5().moveCratesV9000(2, stack1, stack2)
+    fun v9000canMoveMultipleCratesBetweenStacks() {
+        val fromStack = ArrayDeque(listOf("N", "Z"))
+        val toStack = ArrayDeque(listOf("D", "C", "M"))
+        Day5().moveCratesV9000(2, fromStack, toStack)
 
-        assertTrue(stack1.isEmpty())
-        assertEquals(listOf("Z", "N", "D", "C", "M"), stack2)
+        assertTrue(fromStack.isEmpty())
+        assertEquals(listOf("Z", "N", "D", "C", "M"), toStack)
+
+    }
+
+    @Test
+    fun v9001canMoveMultipleCratesBetweenStacks() {
+        val fromStack = ArrayDeque(listOf("N", "Z"))
+        val toStack = ArrayDeque(listOf("D", "C", "M"))
+        Day5().moveCratesV9001(2, fromStack, toStack)
+
+        assertTrue(fromStack.isEmpty())
+        assertEquals(listOf("N", "Z", "D", "C", "M"), toStack)
 
     }
 
     @Test
     fun canMoveASingleCrateBetweenStacks() {
-        val stack1 = ArrayDeque(listOf("N", "Z"))
-        val stack2 = ArrayDeque(listOf("D", "C", "M"))
-        Day5().moveCrate(stack1, stack2)
+        val fromStack = ArrayDeque(listOf("N", "Z"))
+        val toStack = ArrayDeque(listOf("D", "C", "M"))
+        Day5().moveCrate(fromStack, toStack)
 
-        assertEquals(listOf("Z"), stack1)
-        assertEquals(listOf("N", "D", "C", "M"), stack2)
+        assertEquals(listOf("Z"), fromStack)
+        assertEquals(listOf("N", "D", "C", "M"), toStack)
 
     }
 
     @Test
     fun canMoveASingleCrateToAnEmptyStack() {
-        val stack1 = ArrayDeque(listOf("N", "Z"))
-        val stack2 = ArrayDeque<String>()
-        Day5().moveCrate(stack1, stack2)
+        val fromStack = ArrayDeque(listOf("N", "Z"))
+        val toStack = ArrayDeque<String>()
+        Day5().moveCrate(fromStack, toStack)
 
-        assertEquals(listOf("Z"), stack1)
-        assertEquals(listOf("N"), stack2)
+        assertEquals(listOf("Z"), fromStack)
+        assertEquals(listOf("N"), toStack)
 
     }
 
     @Test
     fun cannotMoveACrateFromAnEmptyStack() {
-        val stack1 = ArrayDeque<String>()
-        val stack2 = ArrayDeque<String>()
+        val fromStack = ArrayDeque<String>()
+        val toStack = ArrayDeque<String>()
 
-        assertFailsWith<NoSuchElementException> { Day5().moveCrate(stack1, stack2) }
+        assertFailsWith<NoSuchElementException> { Day5().moveCrate(fromStack, toStack) }
 
     }
 

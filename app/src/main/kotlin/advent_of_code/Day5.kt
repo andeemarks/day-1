@@ -14,6 +14,14 @@ class Day5(val input: List<String> = emptyList()) {
         }
     }
 
+    fun moveCratesV9001(numberOfCrates: Int, fromStack: ArrayDeque<String>, toStack: ArrayDeque<String>) {
+        val stackToMove = fromStack.subList(0, numberOfCrates)
+        stackToMove.reversed().forEach { crate -> toStack.addFirst(crate) }
+        repeat(numberOfCrates) {
+            fromStack.removeFirst()
+        }
+    }
+
     fun topOfStack(stack: ArrayDeque<String>): String {
         return stack.first()
     }
@@ -59,8 +67,9 @@ class Day5(val input: List<String> = emptyList()) {
 
     fun printStackTops(stacks: Map<String, ArrayDeque<String>>) {
         stacks.keys.forEach { key ->
-            println("$key -> ${topOfStack(stacks[key]!!)}")
+            print(topOfStack(stacks[key]!!))
         }
+        println()
     }
 }
 
@@ -72,21 +81,14 @@ fun main() {
     val stacks = day5.parseStacks(stackDescription)
     val instructions = day5.input.subList(stackDescriptionEndPosition + 1, day5.input.size - 1)
 
-    instructions.forEachIndexed { i, it ->
-        processStep(i, day5, it, stacks)
+    instructions.forEach {
+        val stepComponents: Triple<Int, Int, Int> = day5.parseStep(it)
+        val fromStack = stacks[stepComponents.second.toString()]!!
+        val toStack = stacks[stepComponents.third.toString()]!!
+        val crateCount = stepComponents.first
+//            day5.moveCratesV9000(crateCount, fromStack, toStack)
+        day5.moveCratesV9001(crateCount, fromStack, toStack)
     }
     day5.printStackTops(stacks)
 }
 
-private fun processStep(stepNumber: Int, day5: Day5, step: String, stacks: Map<String, ArrayDeque<String>>) {
-    val stepComponents: Triple<Int, Int, Int> = day5.parseStep(step)
-    val fromStack = stacks[stepComponents.second.toString()]!!
-    val toStack = stacks[stepComponents.third.toString()]!!
-    val crateCount = stepComponents.first
-
-    try {
-        day5.moveCratesV9000(crateCount, fromStack, toStack)
-    } catch (e: Exception) {
-        println("Error attempting to execute ($stepNumber) $step on $fromStack and $toStack")
-    }
-}
