@@ -1,18 +1,64 @@
 package advent_of_code
 
-import java.lang.IllegalArgumentException
-
 interface Command {
     fun build(arguments: List<String>): Command
 
 }
 
-class CDCommand : Command {
+class LSResultLine(line: String) {
+
+    val size: Int
+    val name: String
+    val type: String
+
+    init {
+        val lineParts = line.split(" ")
+        if (lineParts[0] == DIR) {
+            this.type = DIR
+            this.size = 0
+            this.name = lineParts[1]
+        } else {
+            this.type = FILE
+            this.size = lineParts[0].toInt()
+            this.name = lineParts[1]
+        }
+    }
+
+    companion object {
+        val DIR: String = "dir"
+        val FILE: String = "file"
+    }
+}
+
+class LSResult(resultLines: List<String>) {
+
+    operator fun get(i: Int): LSResultLine {
+        return lines[i]
+    }
+
+    private var lines: List<LSResultLine>
+    var size: Int
+
+    init {
+        lines = resultLines.map { LSResultLine(it) }
+        size = lines.size
+    }
+
+}
+
+class CDCommand(val argument: String = "") : Command {
+
     override fun build(arguments: List<String>): Command {
         if (arguments.size != 1) {
             throw IllegalArgumentException()
         }
-        return CDCommand()
+
+        return CDCommand(arguments[0])
+    }
+
+    companion object {
+        val ROOT: String = "/"
+        val PARENT: String = ".."
     }
 }
 
@@ -38,6 +84,10 @@ class Day7 {
         }
 
         throw IllegalArgumentException()
+    }
+
+    fun parseResult(resultLines: List<String>): LSResult {
+        return LSResult(resultLines)
     }
 
 }
