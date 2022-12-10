@@ -71,7 +71,25 @@ class LSCommand : Command {
     }
 }
 
+class Node(val name: String) {
+    var parent: Node? = null
+    val children: MutableList<Node> = mutableListOf()
+
+    override fun equals(other: Any?): Boolean {
+        val otherNode = other as Node
+
+        return name == otherNode.name
+    }
+}
+
+class DirTree {
+    val root: Node = Node("/")
+    var current: Node = this.root
+}
+
 class Day7 {
+    val tree: DirTree = DirTree()
+
     fun parseCommand(command: String): Command {
         val commandParts = command.split(" ")
 
@@ -88,6 +106,20 @@ class Day7 {
 
     fun parseResult(resultLines: List<String>): LSResult {
         return LSResult(resultLines)
+    }
+
+    fun pushDirectory(cdCommand: CDCommand) {
+        val dir = Node(cdCommand.argument)
+        dir.parent = tree.current
+        tree.current.children.add(dir)
+        tree.current = dir
+
+    }
+
+    fun pushDirectoryContents(contents: LSResult) {
+        for (i: Int in 0 until contents.size) {
+            tree.current.children.add(Node(contents[i].name))
+        }
     }
 
 }
