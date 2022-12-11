@@ -1,5 +1,7 @@
 package advent_of_code
 
+import java.io.File
+
 interface Command {
     fun build(arguments: List<String>): Command
 
@@ -25,8 +27,8 @@ class LSResultLine(line: String) {
     }
 
     companion object {
-        val DIR: String = "dir"
-        val FILE: String = "file"
+        const val DIR: String = "dir"
+        const val FILE: String = "file"
     }
 }
 
@@ -57,8 +59,8 @@ class CDCommand(val argument: String = "") : Command {
     }
 
     companion object {
-        val ROOT: String = "/"
-        val PARENT: String = ".."
+        const val ROOT: String = "/"
+        const val PARENT: String = ".."
     }
 }
 
@@ -71,7 +73,7 @@ class LSCommand : Command {
     }
 }
 
-class Node(val name: String) {
+class Node(val name: String, val level: Int = 0) {
     var parent: Node? = null
     val children: MutableList<Node> = mutableListOf()
 
@@ -83,14 +85,50 @@ class Node(val name: String) {
 }
 
 class DirTree {
+    fun size(): Int {
+        val visitor = NodeCounter()
+
+        visitNode(root, visitor)
+
+        return visitor.nodesVisited
+    }
+
+    interface NodeVisitor {
+        fun visit(node: Node)
+    }
+
+    class NodeCounter : NodeVisitor {
+        var nodesVisited = 0
+        override fun visit(node: Node) {
+            nodesVisited++
+        }
+    }
+
+    class NodePrinter : NodeVisitor {
+        override fun visit(node: Node) {
+            println("${"  ".repeat(node.level)}* ${node.name}")
+        }
+    }
+
+    private fun visitNode(node: Node, visitor: NodeVisitor) {
+        visitor.visit(node)
+        val children = node.children
+        children.forEach { visitNode(it, visitor) }
+    }
+
+    fun show() {
+        val printer = NodePrinter()
+        visitNode(root, printer)
+    }
+
     val root: Node = Node("/")
     var current: Node = this.root
 }
 
-class Day7 {
+class Day7(val commands: List<String> = emptyList()) {
     val tree: DirTree = DirTree()
 
-    fun parseCommand(command: String): Command {
+    fun  parseCommand(command: String): Command {
         val commandParts = command.split(" ")
 
         if (commandParts[0] != "$") throw IllegalArgumentException()
@@ -108,18 +146,42 @@ class Day7 {
         return LSResult(resultLines)
     }
 
-    fun pushDirectory(cdCommand: CDCommand) {
-        val dir = Node(cdCommand.argument)
-        dir.parent = tree.current
-        tree.current.children.add(dir)
-        tree.current = dir
+    fun pushDirectory(cdCommand: CDCommand): Node {
+        if (cdCommand.argument == CDCommand.PARENT) {
+            tree.current = tree.current.parent!!
+        } else {
+            val dir = Node(cdCommand.argument, tree.current.level + 1)
+            dir.parent = tree.current
+            tree.current.children.add(dir)
+            tree.current = dir
+        }
+
+        return tree.current
 
     }
 
     fun pushDirectoryContents(contents: LSResult) {
         for (i: Int in 0 until contents.size) {
-            tree.current.children.add(Node(contents[i].name))
+            tree.current.children.add(Node(contents[i].name, tree.current.level + 1))
         }
     }
 
+}
+
+fun main() {
+    val app = Day7(File("day7-input.txt").inputStream().readBytes().toString(Charsets.UTF_8).split("\n"))
+
+    val input = app.commands.filter { it.startsWith("$") }
+    input.forEach {
+        val command = app.parseCommand(it)
+        if (command is CDCommand) {
+            app.pushDirectory(command)
+//        } else if (command is LSCommand) {
+//            println("ls")
+        }
+    }
+
+    app.tree.show()
+
+    println("Number of directories ${app.tree.size()}")
 }
