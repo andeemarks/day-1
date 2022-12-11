@@ -73,7 +73,7 @@ class LSCommand : Command {
     }
 }
 
-class Node(val name: String, val level: Int = 0) {
+open class Node(val name: String, val level: Int = 0) {
     var parent: Node? = null
     val children: MutableList<Node> = mutableListOf()
 
@@ -81,6 +81,18 @@ class Node(val name: String, val level: Int = 0) {
         val otherNode = other as Node
 
         return name == otherNode.name
+    }
+}
+
+class DirNode(name: String, level: Int) : Node(name, level) {
+    override fun toString(): String {
+        return "${" ".repeat(level)}└$name"
+    }
+}
+
+class FileNode(name: String, level: Int, val size: Int) : Node(name, level) {
+    override fun toString(): String {
+        return "${" ".repeat(level)}└$name ($size)"
     }
 }
 
@@ -106,7 +118,7 @@ class DirTree {
 
     class NodePrinter : NodeVisitor {
         override fun visit(node: Node) {
-            println("${"  ".repeat(node.level)}* ${node.name}")
+            println(node.toString())
         }
     }
 
@@ -128,7 +140,7 @@ class DirTree {
 class Day7(val commands: List<String> = emptyList()) {
     val tree: DirTree = DirTree()
 
-    fun  parseCommand(command: String): Command {
+    fun parseCommand(command: String): Command {
         val commandParts = command.split(" ")
 
         if (commandParts[0] != "$") throw IllegalArgumentException()
@@ -150,7 +162,7 @@ class Day7(val commands: List<String> = emptyList()) {
         if (cdCommand.argument == CDCommand.PARENT) {
             tree.current = tree.current.parent!!
         } else {
-            val dir = Node(cdCommand.argument, tree.current.level + 1)
+            val dir = DirNode(cdCommand.argument, tree.current.level + 1)
             dir.parent = tree.current
             tree.current.children.add(dir)
             tree.current = dir
@@ -162,7 +174,7 @@ class Day7(val commands: List<String> = emptyList()) {
 
     fun pushDirectoryContents(contents: LSResult) {
         for (i: Int in 0 until contents.size) {
-            tree.current.children.add(Node(contents[i].name, tree.current.level + 1))
+            tree.current.children.add(FileNode(contents[i].name, tree.current.level + 1, contents[i].size))
         }
     }
 
@@ -171,17 +183,20 @@ class Day7(val commands: List<String> = emptyList()) {
 fun main() {
     val app = Day7(File("day7-input.txt").inputStream().readBytes().toString(Charsets.UTF_8).split("\n"))
 
-    val input = app.commands.filter { it.startsWith("$") }
-    input.forEach {
-        val command = app.parseCommand(it)
-        if (command is CDCommand) {
-            app.pushDirectory(command)
-//        } else if (command is LSCommand) {
-//            println("ls")
+    val input = app.commands.filter { !it.startsWith("dir") }
+    input.forEachIndexed { i, it ->
+        if (it.startsWith("$")) {
+            val command = app.parseCommand(it)
+            if (command is CDCommand) {
+                app.pushDirectory(command)
+            }
+        } else {
+            val result = app.parseResult(listOf(it))
+            app.pushDirectoryContents(result)
         }
+
+        app.tree.show()
+
+        println("Number of entries ${app.tree.size()}")
     }
-
-    app.tree.show()
-
-    println("Number of directories ${app.tree.size()}")
 }
