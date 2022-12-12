@@ -74,6 +74,7 @@ class LSCommand : Command {
 }
 
 open class Node(val name: String, val level: Int = 0) {
+    var contentsSize: Int = 0
     var parent: Node? = null
     val children: MutableList<Node> = mutableListOf()
 
@@ -82,24 +83,33 @@ open class Node(val name: String, val level: Int = 0) {
 
         return name == otherNode.name
     }
-}
 
-class DirNode(name: String, level: Int) : Node(name, level) {
     override fun toString(): String {
-        return "${" ".repeat(level)}└$name"
+        val indent = " ".repeat(level)
+        val sizeStartPos = 49 - indent.length - name.length
+        return String.format("%s└%s [%${sizeStartPos}d]", indent, name.uppercase(), contentsSize)
+    }
+
+    fun increaseContentSize(additionalContentSize: Int) {
+        contentsSize += additionalContentSize
+        if (parent != null) parent!!.increaseContentSize(additionalContentSize)
     }
 }
+
+class DirNode(name: String, level: Int) : Node(name, level)
 
 class FileNode(name: String, level: Int, val size: Int) : Node(name, level) {
     override fun toString(): String {
-        return "${" ".repeat(level)}└$name ($size)"
+        val indent = " ".repeat(level)
+        val sizeStartPos = 50 - indent.length - name.length
+        return String.format("%s└%s %${sizeStartPos}d", indent, name.uppercase(), size)
     }
+
 }
 
 class DirTree {
     fun size(): Int {
         val visitor = NodeCounter()
-
         visitNode(root, visitor)
 
         return visitor.nodesVisited
@@ -122,6 +132,18 @@ class DirTree {
         }
     }
 
+    class SmallDirFinder : NodeVisitor {
+        var smallDirs = mutableListOf<DirNode>()
+
+        override fun visit(node: Node) {
+            if (node is DirNode) {
+                if (node.contentsSize <= 100000) {
+                    smallDirs.add(node)
+                }
+            }
+        }
+    }
+
     private fun visitNode(node: Node, visitor: NodeVisitor) {
         visitor.visit(node)
         val children = node.children
@@ -129,8 +151,14 @@ class DirTree {
     }
 
     fun show() {
-        val printer = NodePrinter()
-        visitNode(root, printer)
+        visitNode(root, NodePrinter())
+    }
+
+    fun findSmallDirs(): List<DirNode> {
+        val smallDirFinder = SmallDirFinder()
+        visitNode(root, smallDirFinder)
+
+        return smallDirFinder.smallDirs
     }
 
     val root: Node = Node("/")
@@ -159,7 +187,9 @@ class Day7(val commands: List<String> = emptyList()) {
     }
 
     fun pushDirectory(cdCommand: CDCommand): Node {
-        if (cdCommand.argument == CDCommand.PARENT) {
+        if (cdCommand.argument == CDCommand.ROOT) {
+//            tree.current = tree.current.parent!!
+        } else if (cdCommand.argument == CDCommand.PARENT) {
             tree.current = tree.current.parent!!
         } else {
             val dir = DirNode(cdCommand.argument, tree.current.level + 1)
@@ -173,9 +203,12 @@ class Day7(val commands: List<String> = emptyList()) {
     }
 
     fun pushDirectoryContents(contents: LSResult) {
+        val currentNode = tree.current
         for (i: Int in 0 until contents.size) {
-            tree.current.children.add(FileNode(contents[i].name, tree.current.level + 1, contents[i].size))
+            currentNode.children.add(FileNode(contents[i].name, currentNode.level + 1, contents[i].size))
+            currentNode.contentsSize += contents[i].size
         }
+        if (currentNode.parent != null) currentNode.parent!!.increaseContentSize(currentNode.contentsSize)
     }
 
 }
@@ -195,8 +228,11 @@ fun main() {
             app.pushDirectoryContents(result)
         }
 
-        app.tree.show()
-
-        println("Number of entries ${app.tree.size()}")
     }
+    app.tree.show()
+    val smallDirs = app.tree.findSmallDirs()
+    println("Size of small dirs ${smallDirs.sumOf { it.contentsSize }}")
+
+    println("Number of entries ${app.tree.size()}")
+    println("Size of entire tree ${app.tree.root.contentsSize}")
 }
