@@ -1,7 +1,5 @@
 package advent_of_code.day7
 
-import advent_of_code.LSResult
-
 class DirTree {
     val root: Node = Node("/")
     var current: Node = this.root
