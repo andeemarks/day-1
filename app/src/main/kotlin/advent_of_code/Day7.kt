@@ -5,19 +5,19 @@ import java.io.File
 
 class LSResult(resultLines: List<String>) {
 
-    operator fun get(i: Int): LSResultLine {
+    operator fun get(i: Int): Line {
         return lines[i]
     }
 
-    private var lines: List<LSResultLine>
+    private var lines: List<Line>
     var size: Int
 
     init {
-        lines = resultLines.map { LSResultLine(it) }
+        lines = resultLines.map { Line(it) }
         size = lines.size
     }
 
-    class LSResultLine(line: String) {
+    class Line(line: String) {
 
         val size: Int
         val name: String
@@ -65,25 +65,17 @@ class Day7(val commands: List<String> = emptyList()) {
         return LSResult(resultLines)
     }
 
-    fun pushDirectory(cdCommand: CDCommand): Node {
-        return tree.pushDirectory(cdCommand)
-    }
-
-    fun pushDirectoryContents(contents: LSResult) {
-        tree.pushDirectoryContents(contents)
-    }
-
     fun processFilesystem(commands: List<String>): DirTree {
         val input = commands.filter { !it.startsWith("dir") }
         input.forEach {
             if (it.startsWith("$")) {
                 val command = parseCommand(it)
                 if (command is CDCommand) {
-                    pushDirectory(command)
+                    tree.pushDirectory(command)
                 }
             } else {
                 val result = parseResult(listOf(it))
-                pushDirectoryContents(result)
+                tree.pushDirectoryContents(result)
             }
 
         }
