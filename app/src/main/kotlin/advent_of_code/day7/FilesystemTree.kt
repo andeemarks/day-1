@@ -31,7 +31,7 @@ class FilesystemTree {
         return smallDirFinder.smallDirs
     }
 
-    fun pushDirectory(cdCommand: CDCommand): Node {
+    fun changeDirectory(cdCommand: CDCommand): Node {
         if (cdCommand.argument == CDCommand.ROOT) {
             current = root
             return current
@@ -49,11 +49,10 @@ class FilesystemTree {
         return current
     }
 
-    fun pushDirectoryContents(contents: LSResult) {
-        val currentNode = current
-        for (i: Int in 0 until contents.size) {
-            val newFile = FileNode(contents[i].name, currentNode.level + 1, contents[i].size)
-            currentNode.add(newFile)
+    fun addFilesToCurrentDirectory(contents: LSResult) {
+        for (i in 0 until contents.size) {
+            val newFile = FileNode(contents[i].name, current.level + 1, contents[i].size)
+            current.add(newFile)
         }
     }
 }

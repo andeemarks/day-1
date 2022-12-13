@@ -78,7 +78,7 @@ class Day7Test {
         val day7 = Day7()
 
         val command = day7.parseCommand("$ cd foo") as CDCommand
-        day7.tree.pushDirectory(command)
+        day7.tree.changeDirectory(command)
 
         val tree = day7.tree
         assertEquals(1, tree.root.children.size)
@@ -91,11 +91,11 @@ class Day7Test {
     fun treeChangesCurrentDirectoryWhenNavigatingToRoot() {
         val day7 = Day7()
 
-        day7.tree.pushDirectory(day7.parseCommand("$ cd foo") as CDCommand)
+        day7.tree.changeDirectory(day7.parseCommand("$ cd foo") as CDCommand)
         val tree = day7.tree
         assertEquals(Node("foo", tree.current.level + 1), tree.current)
 
-        day7.tree.pushDirectory(day7.parseCommand("$ cd /") as CDCommand)
+        day7.tree.changeDirectory(day7.parseCommand("$ cd /") as CDCommand)
         assertEquals(tree.root, tree.current)
         assertEquals(2, tree.size())
 
@@ -105,12 +105,12 @@ class Day7Test {
     fun treeChangesCurrentDirectoryWhenNavigatingToParent() {
         val day7 = Day7()
 
-        day7.tree.pushDirectory(day7.parseCommand("$ cd foo") as CDCommand)
-        day7.tree.pushDirectory(day7.parseCommand("$ cd bar") as CDCommand)
+        day7.tree.changeDirectory(day7.parseCommand("$ cd foo") as CDCommand)
+        day7.tree.changeDirectory(day7.parseCommand("$ cd bar") as CDCommand)
         val tree = day7.tree
         assertEquals(Node("bar", tree.current.level + 1), tree.current)
 
-        day7.tree.pushDirectory(day7.parseCommand("$ cd ..") as CDCommand)
+        day7.tree.changeDirectory(day7.parseCommand("$ cd ..") as CDCommand)
         assertEquals(Node("foo", tree.current.level + 1), tree.current)
         assertEquals(3, tree.size())
 
@@ -120,8 +120,8 @@ class Day7Test {
     fun treeAddsRelativeDirectoriesToCurrentNode() {
         val day7 = Day7()
 
-        day7.tree.pushDirectory(day7.parseCommand("$ cd foo") as CDCommand)
-        day7.tree.pushDirectory(day7.parseCommand("$ cd bar") as CDCommand)
+        day7.tree.changeDirectory(day7.parseCommand("$ cd foo") as CDCommand)
+        day7.tree.changeDirectory(day7.parseCommand("$ cd bar") as CDCommand)
 
         val tree = day7.tree
         assertEquals(1, tree.root.children.size)
@@ -135,7 +135,7 @@ class Day7Test {
     fun treeAddsDirectoryContentsToCurrentNode() {
         val day7 = Day7()
 
-        day7.tree.pushDirectoryContents(day7.parseResult(listOf("dir a", "14848514 b.txt", "8504156 c.dat", "dir d")))
+        day7.tree.addFilesToCurrentDirectory(day7.parseResult(listOf("dir a", "14848514 b.txt", "8504156 c.dat", "dir d")))
 
         val tree = day7.tree
         val contents = tree.root.children

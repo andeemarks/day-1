@@ -30,11 +30,11 @@ class Day7 {
             if (it.startsWith("$")) {
                 val command = parseCommand(it)
                 if (command is CDCommand) {
-                    tree.pushDirectory(command)
+                    tree.changeDirectory(command)
                 }
             } else {
                 val result = parseResult(listOf(it))
-                tree.pushDirectoryContents(result)
+                tree.addFilesToCurrentDirectory(result)
             }
         }
 
