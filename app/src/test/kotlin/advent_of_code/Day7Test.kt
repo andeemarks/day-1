@@ -1,5 +1,6 @@
 package advent_of_code
 
+import advent_of_code.day7.*
 import kotlin.test.*
 
 class Day7Test {
@@ -20,24 +21,24 @@ class Day7Test {
 
         val result = day7.parseResult(listOf("dir a", "14848514 b.txt", "8504156 c.dat", "dir d"))
         assertEquals(4, result.size)
-        assertEquals(LSResultLine.DIR, result[0].type)
+        assertEquals(LSResult.LSResultLine.DIR, result[0].type)
         assertEquals("a", result[0].name)
-        assertEquals(LSResultLine.FILE, result[2].type)
+        assertEquals(LSResult.LSResultLine.FILE, result[2].type)
         assertEquals("c.dat", result[2].name)
         assertEquals(8504156, result[2].size)
     }
 
     @Test
     fun canParseLSResultLine() {
-        var resultLine = LSResultLine("14848514 b.txt")
+        var resultLine = LSResult.LSResultLine("14848514 b.txt")
 
-        assertEquals(LSResultLine.FILE, resultLine.type)
+        assertEquals(LSResult.LSResultLine.FILE, resultLine.type)
         assertEquals(14848514, resultLine.size)
         assertEquals("b.txt", resultLine.name)
 
-        resultLine = LSResultLine("dir e")
+        resultLine = LSResult.LSResultLine("dir e")
 
-        assertEquals(LSResultLine.DIR, resultLine.type)
+        assertEquals(LSResult.LSResultLine.DIR, resultLine.type)
         assertEquals(0, resultLine.size)
         assertEquals("e", resultLine.name)
     }
@@ -96,7 +97,7 @@ class Day7Test {
 
         day7.pushDirectory(day7.parseCommand("$ cd /") as CDCommand)
         assertEquals(tree.root, tree.current)
-        assertEquals(3, tree.size())
+        assertEquals(2, tree.size())
 
     }
 
