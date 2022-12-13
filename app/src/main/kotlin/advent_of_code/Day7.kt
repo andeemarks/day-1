@@ -4,7 +4,7 @@ import advent_of_code.day7.*
 import java.io.File
 
 class Day7 {
-    val tree: DirTree = DirTree()
+    val tree: FilesystemTree = FilesystemTree()
 
     fun parseCommand(command: String): Command {
         val commandParts = command.split(" ")
@@ -24,7 +24,7 @@ class Day7 {
         return LSResult(resultLines)
     }
 
-    fun processFilesystem(commands: List<String>): DirTree {
+    fun processFilesystem(commands: List<String>): FilesystemTree {
         val input = commands.filter { !it.startsWith("dir") }
         input.forEach {
             if (it.startsWith("$")) {

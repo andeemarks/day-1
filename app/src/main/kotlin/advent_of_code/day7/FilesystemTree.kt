@@ -1,6 +1,6 @@
 package advent_of_code.day7
 
-class DirTree {
+class FilesystemTree {
     val root: Node = Node("/")
     var current: Node = this.root
 
