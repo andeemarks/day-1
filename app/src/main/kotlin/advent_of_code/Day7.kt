@@ -44,7 +44,7 @@ class LSResult(resultLines: List<String>) {
 
 }
 
-class Day7(val commands: List<String> = emptyList()) {
+class Day7 {
     val tree: DirTree = DirTree()
 
     fun parseCommand(command: String): Command {
@@ -77,7 +77,6 @@ class Day7(val commands: List<String> = emptyList()) {
                 val result = parseResult(listOf(it))
                 tree.pushDirectoryContents(result)
             }
-
         }
 
         return tree
@@ -85,9 +84,10 @@ class Day7(val commands: List<String> = emptyList()) {
 }
 
 fun main() {
-    val app = Day7(File("day7-input.txt").inputStream().readBytes().toString(Charsets.UTF_8).split("\n"))
+    val commands = File("day7-input.txt").inputStream().readBytes().toString(Charsets.UTF_8).split("\n")
+    val app = Day7()
 
-    val tree = app.processFilesystem(app.commands)
+    val tree = app.processFilesystem(commands)
     tree.show()
     val smallDirs = tree.findSmallDirs()
     println("Size of small dirs ${smallDirs.sumOf { it.contentsSize }}")
