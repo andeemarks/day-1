@@ -1,8 +1,8 @@
 package advent_of_code.day7
 
-open class Node(val name: String, val level: Int = 0) {
+open class Node(val name: String, val level: Int = 0, val parent: Node? = null) {
     var contentsSize: Int = 0
-    var parent: Node? = null
+        private set
     val children: MutableList<Node> = mutableListOf()
 
     override fun equals(other: Any?): Boolean {
@@ -19,7 +19,7 @@ open class Node(val name: String, val level: Int = 0) {
 
     private fun increaseContentSize(additionalContentSize: Int) {
         contentsSize += additionalContentSize
-        if (parent != null) parent!!.increaseContentSize(additionalContentSize)
+        parent?.increaseContentSize(additionalContentSize)
     }
 
     fun add(file: FileNode) {
@@ -29,9 +29,9 @@ open class Node(val name: String, val level: Int = 0) {
     }
 }
 
-class DirNode(name: String, level: Int) : Node(name, level)
+class DirNode(name: String, level: Int, parent: Node? = null) : Node(name, level, parent)
 
-class FileNode(name: String, level: Int, val size: Int) : Node(name, level) {
+class FileNode(name: String, level: Int, val size: Int, parent: Node? = null) : Node(name, level, parent) {
     override fun toString(): String {
         val indent = " ".repeat(level)
         val sizeStartPos = 50 - indent.length - name.length

@@ -3,6 +3,7 @@ package advent_of_code.day7
 class FilesystemTree {
     val root: Node = Node("/")
     var current: Node = this.root
+        private set
 
     fun size(): Int {
         val visitor = NodeCounter()
@@ -40,8 +41,7 @@ class FilesystemTree {
         if (cdCommand.argument == CDCommand.PARENT) {
             current = current.parent!!
         } else {
-            val dir = DirNode(cdCommand.argument, current.level + 1)
-            dir.parent = current
+            val dir = DirNode(cdCommand.argument, current.level + 1, current)
             current.children.add(dir)
             current = dir
         }
