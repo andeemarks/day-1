@@ -17,10 +17,16 @@ open class Node(val name: String, val level: Int = 0) {
         return String.format("%s└%s [%${sizeStartPos}d]", indent, name.uppercase(), contentsSize)
     }
 
-    fun increaseContentSize(additionalContentSize: Int) {
+    private fun increaseContentSize(additionalContentSize: Int) {
         println("Increasing $name size by $additionalContentSize")
         contentsSize += additionalContentSize
         if (parent != null) parent!!.increaseContentSize(additionalContentSize)
+    }
+
+    fun add(file: FileNode) {
+        children.add(file)
+        increaseContentSize(file.size)
+
     }
 }
 

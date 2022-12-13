@@ -3,6 +3,9 @@ package advent_of_code.day7
 import advent_of_code.LSResult
 
 class DirTree {
+    val root: Node = Node("/")
+    var current: Node = this.root
+
     fun size(): Int {
         val visitor = NodeCounter()
         visitNode(root, visitor)
@@ -28,7 +31,6 @@ class DirTree {
     }
 
     fun pushDirectory(cdCommand: CDCommand): Node {
-
         if (cdCommand.argument == CDCommand.ROOT) {
             current = root
             return current
@@ -44,17 +46,13 @@ class DirTree {
         }
 
         return current
-
     }
 
     fun pushDirectoryContents(contents: LSResult) {
         val currentNode = current
         for (i: Int in 0 until contents.size) {
-            currentNode.children.add(FileNode(contents[i].name, currentNode.level + 1, contents[i].size))
-            currentNode.increaseContentSize(contents[i].size)
+            val newFile = FileNode(contents[i].name, currentNode.level + 1, contents[i].size)
+            currentNode.add(newFile)
         }
     }
-
-    val root: Node = Node("/")
-    var current: Node = this.root
 }
