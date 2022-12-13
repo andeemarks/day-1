@@ -1,23 +1,23 @@
 package advent_of_code.day7
 
-interface NodeVisitor {
+interface TreeWalker {
     fun visit(node: Node)
 }
 
-class NodeCounter : NodeVisitor {
+class NodeCounter : TreeWalker {
     var nodesVisited = 0
     override fun visit(node: Node) {
         nodesVisited++
     }
 }
 
-class NodePrinter : NodeVisitor {
+class NodePrinter : TreeWalker {
     override fun visit(node: Node) {
         println(node.toString())
     }
 }
 
-class SmallDirFinder : NodeVisitor {
+class SmallDirFinder : TreeWalker {
     var smallDirs = mutableListOf<DirNode>()
 
     override fun visit(node: Node) {

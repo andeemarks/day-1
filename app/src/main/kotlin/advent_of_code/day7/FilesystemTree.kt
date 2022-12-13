@@ -11,7 +11,7 @@ class FilesystemTree {
         return visitor.nodesVisited
     }
 
-    private fun visitNode(node: Node, visitor: NodeVisitor) {
+    private fun visitNode(node: Node, visitor: TreeWalker) {
         visitor.visit(node)
         val children = node.children
         children.forEach { visitNode(it, visitor) }
