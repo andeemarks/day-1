@@ -91,6 +91,7 @@ open class Node(val name: String, val level: Int = 0) {
     }
 
     fun increaseContentSize(additionalContentSize: Int) {
+        println("Increasing $name size by $additionalContentSize")
         contentsSize += additionalContentSize
         if (parent != null) parent!!.increaseContentSize(additionalContentSize)
     }
@@ -179,7 +180,7 @@ class Day7(val commands: List<String> = emptyList()) {
             return LSCommand().build(commandParts.drop(2))
         }
 
-        throw IllegalArgumentException()
+        throw IllegalArgumentException("Could not identify command '$command' with parts '$commandParts'")
     }
 
     fun parseResult(resultLines: List<String>): LSResult {
@@ -188,8 +189,10 @@ class Day7(val commands: List<String> = emptyList()) {
 
     fun pushDirectory(cdCommand: CDCommand): Node {
         if (cdCommand.argument == CDCommand.ROOT) {
-//            tree.current = tree.current.parent!!
-        } else if (cdCommand.argument == CDCommand.PARENT) {
+            return tree.current
+        }
+
+        if (cdCommand.argument == CDCommand.PARENT) {
             tree.current = tree.current.parent!!
         } else {
             val dir = DirNode(cdCommand.argument, tree.current.level + 1)
@@ -206,31 +209,35 @@ class Day7(val commands: List<String> = emptyList()) {
         val currentNode = tree.current
         for (i: Int in 0 until contents.size) {
             currentNode.children.add(FileNode(contents[i].name, currentNode.level + 1, contents[i].size))
-            currentNode.contentsSize += contents[i].size
+            currentNode.increaseContentSize(contents[i].size)
         }
-        if (currentNode.parent != null) currentNode.parent!!.increaseContentSize(currentNode.contentsSize)
     }
 
+    fun processFilesystem(commands: List<String>): DirTree {
+        val input = commands.filter { !it.startsWith("dir") }
+        input.forEach {
+            if (it.startsWith("$")) {
+                val command = parseCommand(it)
+                if (command is CDCommand) {
+                    pushDirectory(command)
+                }
+            } else {
+                val result = parseResult(listOf(it))
+                pushDirectoryContents(result)
+            }
+
+        }
+
+        return tree
+    }
 }
 
 fun main() {
     val app = Day7(File("day7-input.txt").inputStream().readBytes().toString(Charsets.UTF_8).split("\n"))
 
-    val input = app.commands.filter { !it.startsWith("dir") }
-    input.forEachIndexed { i, it ->
-        if (it.startsWith("$")) {
-            val command = app.parseCommand(it)
-            if (command is CDCommand) {
-                app.pushDirectory(command)
-            }
-        } else {
-            val result = app.parseResult(listOf(it))
-            app.pushDirectoryContents(result)
-        }
-
-    }
-    app.tree.show()
-    val smallDirs = app.tree.findSmallDirs()
+    val tree = app.processFilesystem(app.commands)
+    tree.show()
+    val smallDirs = tree.findSmallDirs()
     println("Size of small dirs ${smallDirs.sumOf { it.contentsSize }}")
 
     println("Number of entries ${app.tree.size()}")

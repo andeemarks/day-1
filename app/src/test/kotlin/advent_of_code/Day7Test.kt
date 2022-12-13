@@ -1,6 +1,5 @@
 package advent_of_code
 
-import java.lang.IllegalArgumentException
 import kotlin.test.*
 
 class Day7Test {
@@ -47,12 +46,12 @@ class Day7Test {
     fun failsToParseInvalidCommands() {
         val day7 = Day7()
 
-        assertFailsWith(IllegalArgumentException::class) {day7.parseCommand("cd ..")}
-        assertFailsWith(IllegalArgumentException::class) {day7.parseCommand("$ cp ..")}
-        assertFailsWith(IllegalArgumentException::class) {day7.parseCommand("$ cd")}
-        assertFailsWith(IllegalArgumentException::class) {day7.parseCommand("$ cd .. /")}
-        assertFailsWith(IllegalArgumentException::class) {day7.parseCommand("$ ls ..")}
-        assertFailsWith(IllegalArgumentException::class) {day7.parseCommand("\$ls")}
+        assertFailsWith(IllegalArgumentException::class) { day7.parseCommand("cd ..") }
+        assertFailsWith(IllegalArgumentException::class) { day7.parseCommand("$ cp ..") }
+        assertFailsWith(IllegalArgumentException::class) { day7.parseCommand("$ cd") }
+        assertFailsWith(IllegalArgumentException::class) { day7.parseCommand("$ cd .. /") }
+        assertFailsWith(IllegalArgumentException::class) { day7.parseCommand("$ ls ..") }
+        assertFailsWith(IllegalArgumentException::class) { day7.parseCommand("\$ls") }
     }
 
     @Test
@@ -146,5 +145,53 @@ class Day7Test {
         assertTrue(contents.contains(Node("d", tree.current.level + 1)))
         assertEquals(5, tree.size())
 
+    }
+
+    @Test
+    fun processASmallFilesystemCorrectly() {
+        val day7 = Day7()
+        val tree = day7.processFilesystem(
+            listOf(
+                "$ ls",
+                "dir fbmww",
+                "dir jsst",
+                "206602 shlhgj.cln",
+                "$ cd fbmww",
+                "$ ls",
+                "179734 fll",
+                "$ cd ..",
+                "$ cd jsst",
+                "$ ls",
+                "dir flp",
+                "$ cd flp",
+                "$ ls",
+                "32274 gctgt.stn",
+                "67650 ggvj.bwz"
+            )
+        )
+
+        assertEquals(8, tree.size())
+        assertEquals(3, tree.root.children.size)
+
+        val file = tree.root.children[0] as FileNode
+        assertEquals("shlhgj.cln", file.name)
+        assertEquals(206602, file.size)
+
+        val dir1 = tree.root.children[1]
+        assertEquals("fbmww", dir1.name)
+        assertEquals(1, dir1.children.size)
+        assertEquals(179734, dir1.contentsSize)
+
+        val dir2 = tree.root.children[2]
+        assertEquals("jsst", dir2.name)
+        assertEquals(1, dir2.children.size)
+
+        val subDir1 = dir2.children[0]
+        assertEquals("flp", subDir1.name)
+        assertEquals(2, subDir1.children.size)
+        assertEquals(32274 + 67650, subDir1.contentsSize)
+        assertEquals(32274 + 67650, dir2.contentsSize)
+
+        assertEquals(file.size + dir1.contentsSize + dir2.contentsSize, tree.root.contentsSize)
     }
 }
