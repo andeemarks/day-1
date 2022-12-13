@@ -6,13 +6,15 @@ interface TreeWalker {
 
 class NodeCounter : TreeWalker {
     var nodesVisited = 0
+
     override fun visit(node: Node) {
         nodesVisited++
     }
 }
 
-class NodePrinter : TreeWalker {
+class TreePrettyPrinter : TreeWalker {
     val output = StringBuilder()
+
     override fun visit(node: Node) {
         output.append(node.toString() + "\n")
     }

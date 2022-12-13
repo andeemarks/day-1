@@ -18,7 +18,7 @@ class FilesystemTree {
     }
 
     override fun toString(): String {
-        val visitor = NodePrinter()
+        val visitor = TreePrettyPrinter()
         visitNode(root, visitor)
 
         return visitor.output.toString()
