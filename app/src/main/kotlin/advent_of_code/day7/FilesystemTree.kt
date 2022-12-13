@@ -17,8 +17,11 @@ class FilesystemTree {
         children.forEach { visitNode(it, visitor) }
     }
 
-    fun show() {
-        visitNode(root, NodePrinter())
+    override fun toString(): String {
+        val visitor = NodePrinter()
+        visitNode(root, visitor)
+
+        return visitor.output.toString()
     }
 
     fun findSmallDirs(): List<DirNode> {

@@ -47,7 +47,7 @@ fun main() {
     val app = Day7()
 
     val tree = app.processFilesystem(commands)
-    tree.show()
+    println(tree.toString())
 
     val smallDirs = tree.findSmallDirs()
     println("Size of small dirs ${smallDirs.sumOf { it.contentsSize }}")

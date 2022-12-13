@@ -12,8 +12,9 @@ class NodeCounter : TreeWalker {
 }
 
 class NodePrinter : TreeWalker {
+    val output = StringBuilder()
     override fun visit(node: Node) {
-        println(node.toString())
+        output.append(node.toString() + "\n")
     }
 }
 
