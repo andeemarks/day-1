@@ -6,14 +6,28 @@ import java.io.File
 class Day7 {
     val tree: FilesystemTree = FilesystemTree()
 
+    private fun String.isCDCommand(): Boolean {
+        return this.startsWith("$ cd")
+    }
+
+    private fun String.isLSCommand(): Boolean {
+        return this.startsWith("$ ls")
+    }
+
+    private fun String.isCommand(): Boolean {
+        return this.startsWith("$")
+    }
+
+    private fun String.isDirEntry(): Boolean {
+        return this.startsWith("dir ")
+    }
+
     fun parseCommand(command: String): Command {
         val commandParts = command.split(" ")
 
-        if (commandParts[0] != "$") throw IllegalArgumentException()
-
-        if (commandParts[1] == "cd") {
+        if (command.isCDCommand()) {
             return CDCommand().build(commandParts.drop(2))
-        } else if (commandParts[1] == "ls") {
+        } else if (command.isLSCommand()) {
             return LSCommand().build(commandParts.drop(2))
         }
 
@@ -25,16 +39,16 @@ class Day7 {
     }
 
     fun processFilesystem(commands: List<String>): FilesystemTree {
-        val input = commands.filter { !it.startsWith("dir") }
+        val input = commands.filter { !it.isDirEntry() }
         input.forEach {
-            if (it.startsWith("$")) {
+            if (it.isCommand()) {
                 val command = parseCommand(it)
                 if (command is CDCommand) {
                     tree.changeDirectory(command)
                 }
             } else {
-                val result = parseResult(listOf(it))
-                tree.addFilesToCurrentDirectory(result)
+                val commandOutput = parseResult(listOf(it))
+                tree.addFilesToCurrentDirectory(commandOutput)
             }
         }
 
