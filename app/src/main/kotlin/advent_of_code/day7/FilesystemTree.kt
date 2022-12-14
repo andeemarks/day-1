@@ -51,7 +51,7 @@ class FilesystemTree {
 
     fun addFilesToCurrentDirectory(contents: LSResult) {
         for (i in 0 until contents.size) {
-            val newFile = FileNode(contents[i].name, current.level + 1, contents[i].size)
+            val newFile = FileNode(contents[i].name, current.level + 1, contents[i].size, current)
             current.addFile(newFile)
         }
     }

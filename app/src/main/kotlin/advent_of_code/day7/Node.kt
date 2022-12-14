@@ -37,7 +37,7 @@ open class Node(val name: String, val level: Int = 0, val parent: Node? = null) 
 
 class DirNode(name: String, level: Int, parent: Node? = null) : Node(name, level, parent)
 
-class FileNode(name: String, level: Int, val size: Int, parent: Node? = null) : Node(name, level, parent) {
+class FileNode(name: String, level: Int, val size: Int, parent: Node) : Node(name, level, parent) {
     override fun toString(): String {
         val indent = " ".repeat(level)
         val sizeStartPos = 50 - indent.length - name.length
