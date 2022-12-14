@@ -5,12 +5,6 @@ open class Node(val name: String, val level: Int = 0, val parent: Node? = null) 
         private set
     val children: MutableList<Node> = mutableListOf()
 
-    override fun equals(other: Any?): Boolean {
-        val otherNode = other as Node
-
-        return name == otherNode.name
-    }
-
     override fun toString(): String {
         val indent = " ".repeat(level)
         val sizeStartPos = 49 - indent.length - name.length
@@ -22,10 +16,22 @@ open class Node(val name: String, val level: Int = 0, val parent: Node? = null) 
         parent?.increaseContentSize(additionalContentSize)
     }
 
-    fun add(file: FileNode) {
+    fun addFile(file: FileNode) {
         children.add(file)
         increaseContentSize(file.size)
+    }
 
+    override fun equals(other: Any?): Boolean {
+        val otherNode = other as Node
+
+        return name == otherNode.name
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + (parent?.hashCode() ?: 0)
+
+        return result
     }
 }
 
