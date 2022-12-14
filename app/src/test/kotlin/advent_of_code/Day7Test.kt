@@ -83,7 +83,7 @@ class Day7Test {
         val tree = day7.tree
         assertEquals(1, tree.root.children.size)
         assertEquals(2, tree.size())
-        assertEquals(Node("foo", tree.current.level + 1), tree.current)
+        assertEquals(Node("foo"), tree.current)
         assertEquals(tree.root, tree.root.children[0].parent)
     }
 
@@ -93,9 +93,9 @@ class Day7Test {
 
         day7.tree.changeDirectory(day7.parseCommand("$ cd foo") as CDCommand)
         val tree = day7.tree
-        assertEquals(Node("foo", tree.current.level + 1), tree.current)
+        assertEquals(Node("foo"), tree.current)
 
-        day7.tree.changeDirectory(day7.parseCommand("$ cd /") as CDCommand)
+        tree.changeDirectory(day7.parseCommand("$ cd /") as CDCommand)
         assertEquals(tree.root, tree.current)
         assertEquals(2, tree.size())
 
@@ -108,10 +108,10 @@ class Day7Test {
         day7.tree.changeDirectory(day7.parseCommand("$ cd foo") as CDCommand)
         day7.tree.changeDirectory(day7.parseCommand("$ cd bar") as CDCommand)
         val tree = day7.tree
-        assertEquals(Node("bar", tree.current.level + 1), tree.current)
+        assertEquals(Node("bar"), tree.current)
 
         day7.tree.changeDirectory(day7.parseCommand("$ cd ..") as CDCommand)
-        assertEquals(Node("foo", tree.current.level + 1), tree.current)
+        assertEquals(Node("foo"), tree.current)
         assertEquals(3, tree.size())
 
     }
@@ -125,8 +125,8 @@ class Day7Test {
 
         val tree = day7.tree
         assertEquals(1, tree.root.children.size)
-        assertEquals(Node("bar", tree.current.level + 1), tree.current)
-        assertEquals(Node("foo", tree.current.level + 1), tree.current.parent)
+        assertEquals(Node("bar"), tree.current)
+        assertEquals(Node("foo"), tree.current.parent)
         assertEquals(3, tree.size())
 
     }
@@ -140,10 +140,10 @@ class Day7Test {
         val tree = day7.tree
         val contents = tree.root.children
         assertEquals(4, contents.size)
-        assertTrue(contents.contains(Node("a", tree.current.level + 1)))
-        assertTrue(contents.contains(Node("b.txt", tree.current.level + 1)))
-        assertTrue(contents.contains(Node("c.dat", tree.current.level + 1)))
-        assertTrue(contents.contains(Node("d", tree.current.level + 1)))
+        assertTrue(contents.contains(Node("a")))
+        assertTrue(contents.contains(Node("b.txt")))
+        assertTrue(contents.contains(Node("c.dat")))
+        assertTrue(contents.contains(Node("d")))
         assertEquals(5, tree.size())
 
     }

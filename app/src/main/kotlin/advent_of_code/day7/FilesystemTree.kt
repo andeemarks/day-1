@@ -41,7 +41,7 @@ class FilesystemTree {
         if (cdCommand.argument == CDCommand.PARENT) {
             current = current.parent!!
         } else {
-            val dir = DirNode(cdCommand.argument, current.level + 1, current)
+            val dir = DirNode(cdCommand.argument, current)
             current.children.add(dir)
             current = dir
         }
@@ -51,7 +51,7 @@ class FilesystemTree {
 
     fun addFilesToCurrentDirectory(contents: LSResult) {
         for (i in 0 until contents.size) {
-            val newFile = FileNode(contents[i].name, current.level + 1, contents[i].size, current)
+            val newFile = FileNode(contents[i].name, contents[i].size, current)
             current.addFile(newFile)
         }
     }
