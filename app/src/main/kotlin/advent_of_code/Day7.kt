@@ -69,7 +69,7 @@ fun main() {
     println("Number of entries ${app.tree.size()}")
     println("Size of entire tree ${app.tree.root.contentsSize}")
 
-    val amountToDelete = app.tree.root.contentsSize - 30000000
+    val amountToDelete = app.tree.root.contentsSize - 40000000
     println("Finding smallest directory containing at least $amountToDelete")
     val toDelete = tree.findSmallestDirGreaterThan(amountToDelete)
     println("Deleting $toDelete")
