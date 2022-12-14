@@ -50,9 +50,17 @@ class FilesystemTree {
     }
 
     fun addFilesToCurrentDirectory(contents: LSResult) {
-        for (i in 0 until contents.size) {
-            val newFile = FileNode(contents[i].name, contents[i].size, current)
+        contents.files().forEach {
+            val newFile = FileNode(it.name, it.size, current)
             current.addFile(newFile)
         }
+    }
+
+    fun findSmallestDirGreaterThan(amountToDelete: Int): Int {
+        val smallDirFinder = SmallestDirFinder(amountToDelete)
+        visitNode(root, smallDirFinder)
+
+        return smallDirFinder.smallestDirSize
+
     }
 }

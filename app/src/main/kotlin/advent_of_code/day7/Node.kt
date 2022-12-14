@@ -9,7 +9,7 @@ open class Node(val name: String, val parent: Node? = null) {
         val indent = " ".repeat(depth())
         val sizeStartPos = 49 - indent.length - name.length
 
-        return String.format("%s└%s [%${sizeStartPos}d]", indent, name.uppercase(), contentsSize)
+        return String.format("%s└%s [%,${sizeStartPos}d]", indent, name.uppercase(), contentsSize)
     }
 
     private fun increaseContentSize(additionalContentSize: Int) {
@@ -53,7 +53,7 @@ class FileNode(name: String, val size: Int, parent: Node) : Node(name, parent) {
         val indent = " ".repeat(depth())
         val sizeStartPos = 50 - indent.length - name.length
 
-        return String.format("%s└%s %${sizeStartPos}d", indent, name, size)
+        return String.format("%s└%s %,${sizeStartPos}d", indent, name, size)
     }
 
 }

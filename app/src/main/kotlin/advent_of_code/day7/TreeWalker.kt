@@ -20,7 +20,23 @@ class TreePrettyPrinter : TreeWalker {
     }
 }
 
-class SmallDirFinder : TreeWalker {
+class SmallestDirFinder(private val floor: Int) : TreeWalker {
+    val smallestDirSize
+        get() = smallDirs.minOf { it.contentsSize }
+
+    private var smallDirs = mutableListOf<DirNode>()
+
+    override fun visit(node: Node) {
+        if (node is DirNode) {
+            if (node.contentsSize >= floor) {
+                smallDirs.add(node)
+            }
+        }
+    }
+
+}
+
+class SmallDirFinder() : TreeWalker {
     var smallDirs = mutableListOf<DirNode>()
 
     override fun visit(node: Node) {

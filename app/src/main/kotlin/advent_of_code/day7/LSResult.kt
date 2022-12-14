@@ -13,6 +13,10 @@ class LSResult(resultLines: List<String>) {
         size = lines.size
     }
 
+    fun files(): Iterable<Line> {
+        return lines.asIterable()
+    }
+
     class Line(line: String) {
 
         val size: Int
