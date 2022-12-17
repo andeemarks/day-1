@@ -10,6 +10,7 @@ class Day8Test {
     @Test
     fun canSatisfyResultFromSampleInput() {
         assertEquals(21, day8.countVisibleTrees(listOf("30373",
+                "25512",
                 "65332",
                 "33549",
                 "35390")))
@@ -22,19 +23,19 @@ class Day8Test {
 
     @Test
     fun allTreesAreVisibleInASingleTreeRow() {
-        assertEquals(1, day8.findVisibleTreesInRow("3"))
+        assertEquals(listOf(TreeHeight(0, 0, 3)), day8.findVisibleTreesInRow("3"))
     }
 
     @Test
     fun allTreesAreVisibleInATwoTreeRow() {
-        assertEquals(2, day8.findVisibleTreesInRow("33"))
+        assertEquals(listOf(TreeHeight(0, 0, 3), TreeHeight(0, 1, 3)), day8.findVisibleTreesInRow("33"))
     }
 
     @Test
     fun allTreesAreVisibleInATwoTreeColumn() {
-        assertEquals(2, day8.findVisibleTreesInColumn(listOf("3", "3"), 0))
-        assertEquals(2, day8.findVisibleTreesInColumn(listOf("01", "23"), 1))
-        assertEquals(2, day8.findVisibleTreesInColumn(listOf("215", "333"), 2))
+        assertEquals(listOf(TreeHeight(0, 0, 3), TreeHeight(1, 0, 3)), day8.findVisibleTreesInColumn(listOf("3", "3"), 0))
+        assertEquals(listOf(TreeHeight(0, 1, 1), TreeHeight(1, 1, 3)), day8.findVisibleTreesInColumn(listOf("01", "23"), 1))
+        assertEquals(listOf(TreeHeight(0, 2, 5), TreeHeight(1, 2, 3)), day8.findVisibleTreesInColumn(listOf("215", "333"), 2))
     }
 
     @Test
@@ -45,13 +46,16 @@ class Day8Test {
 
     @Test
     fun someTreesCanBeHiddenInAThreeTreeRow() {
-        assertEquals(2, day8.findVisibleTreesInRow("313"))
+        assertEquals(listOf(TreeHeight(0, 0, 3), TreeHeight(0, 2, 3)), day8.findVisibleTreesInRow("313"))
     }
 
     @Test
-    fun someTreesCanBeHiddenInAFourTreeRow() {
-        assertEquals(2, day8.findVisibleTreesInRow("3133"))
-        assertEquals(3, day8.findVisibleTreesInRow("3143"))
+    fun someTreesCanBeHiddenInLongerRows() {
+        assertEquals(listOf(TreeHeight(0, 0, 3), TreeHeight(0, 3, 3)), day8.findVisibleTreesInRow("3133"))
+        assertEquals(listOf(TreeHeight(0, 0, 3), TreeHeight(0, 1, 4), TreeHeight(0, 3, 3)), day8.findVisibleTreesInRow("3413"))
+        assertEquals(listOf(TreeHeight(0, 0, 2), TreeHeight(0, 1, 5), TreeHeight(0, 2, 5), TreeHeight(0, 4, 2)), day8.findVisibleTreesInRow("25512"))
+        assertEquals(listOf(TreeHeight(0, 0, 3), TreeHeight(0, 2, 5), TreeHeight(0, 4, 9)), day8.findVisibleTreesInRow("33549"))
+        assertEquals(listOf(TreeHeight(0, 0, 9), TreeHeight(0, 2, 5), TreeHeight(0, 4, 3)), day8.findVisibleTreesInRow("94533"))
     }
 
     @Test
@@ -61,6 +65,12 @@ class Day8Test {
 
     @Test
     fun someTreesCanBeHiddenInAGridOf9Trees() {
-        assertEquals(8, day8.countVisibleTrees(listOf("456", "123", "789")))
+        assertEquals(8, day8.countVisibleTrees(listOf("456", "312", "789")))
+    }
+
+    @Test
+    fun treeHeightCoordsCanBeFlipped() {
+        assertEquals(TreeHeight(2, 1, 3), TreeHeight(1, 2, 3).flip())
+        assertEquals(TreeHeight(1, 2, 4), TreeHeight(2, 1, 4).flip())
     }
 }
