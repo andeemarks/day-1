@@ -8,7 +8,7 @@ class Day8 {
         return treeGrid.size * treeGrid[0].length
     }
 
-    fun countVisibleTreesInRow(treeRow: String): Int {
+    fun findVisibleTreesInRow(treeRow: String): Int {
         var treeHeights = treeRow.map { it.code }.toMutableList()
         val smallestBoundaryHeight = min(treeHeights.first(), treeHeights.last())
         treeHeights = treeHeights.dropWhile { it < smallestBoundaryHeight }.toMutableList()
@@ -31,12 +31,12 @@ class Day8 {
         return min(visibleTrees.size, treeRow.length)
     }
 
-    fun countVisibleTreesInColumn(treeGrid: List<String>, columnNumber: Int): Int {
+    fun findVisibleTreesInColumn(treeGrid: List<String>, columnNumber: Int): Int {
         require (columnNumber in 0 until(treeGrid[0].length))
 
         val treeColumn = treeGrid.map { treeRow -> treeRow[columnNumber]}.joinToString("")
 
-        return countVisibleTreesInRow(treeColumn)
+        return findVisibleTreesInRow(treeColumn)
     }
 }
 
