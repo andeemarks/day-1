@@ -4,8 +4,17 @@ import advent_of_code.day8.TreeHeight
 import java.io.File
 
 class Day8 {
+    fun countVisibleTrees(treeGrid: List<String>): Int {
+        val visibleTrees = treeGrid.mapIndexed { i, it -> findVisibleTreesInRow(it, i) }.flatten().toMutableSet()
+        for (i in 0 until (treeGrid[0].length)) {
+            visibleTrees.addAll(findVisibleTreesInColumn(treeGrid, i))
+        }
+
+        return visibleTrees.size
+    }
+
     fun findVisibleTreesInRow(treeRow: String, rowIndex: Int = 0): List<TreeHeight> {
-        val treeHeights = treeRow.split("").filter { it.isNotEmpty() }.map { it.toInt() }.toMutableList()
+        val treeHeights = treeHeights(treeRow)
         val visibleTrees = mutableSetOf<TreeHeight>()
         visibleTrees.add(TreeHeight(rowIndex, 0, treeHeights.first()))
         visibleTrees.addAll(findVisibleTreesFromLeft(treeHeights, rowIndex))
@@ -15,96 +24,87 @@ class Day8 {
         return visibleTrees.toMutableList()
     }
 
-    private fun findVisibleTreesFromLeft(treeHeights: List<Int>, rowIndex: Int): Set<TreeHeight> {
-        var leftTreeIndex = 0
-        var rightTreeIndex = leftTreeIndex + 1
-        val visibleTrees = mutableSetOf<TreeHeight>()
-        while (rightTreeIndex < treeHeights.size) {
-            if (treeHeights[leftTreeIndex] < treeHeights[rightTreeIndex]) {
-                visibleTrees.add(TreeHeight(rowIndex, rightTreeIndex, treeHeights[rightTreeIndex]))
-                leftTreeIndex = rightTreeIndex
-                rightTreeIndex = leftTreeIndex + 1
-            } else {
-                rightTreeIndex++
-            }
-        }
-
-        return visibleTrees
-    }
-
-    private fun findVisibleTreesFromRight(treeHeights: MutableList<Int>, rowIndex: Int): MutableSet<TreeHeight> {
-        var rightTreeIndex = treeHeights.size - 1
-        var leftTreeIndex = rightTreeIndex - 1
-        val visibleTrees = mutableSetOf<TreeHeight>()
-        while (leftTreeIndex >= 0) {
-            if (treeHeights[rightTreeIndex] < treeHeights[leftTreeIndex]) {
-                visibleTrees.add(TreeHeight(rowIndex, leftTreeIndex, treeHeights[leftTreeIndex]))
-                rightTreeIndex = leftTreeIndex
-                leftTreeIndex = rightTreeIndex - 1
-            } else {
-                leftTreeIndex--
-            }
-        }
-
-        return visibleTrees
-    }
-
     fun findVisibleTreesInColumn(treeGrid: List<String>, columnNumber: Int): List<TreeHeight> {
         require(columnNumber in 0 until (treeGrid[0].length))
 
         val treeColumn = columnToRow(treeGrid, columnNumber)
 
-        return findVisibleTreesInRow(treeColumn, columnNumber).map { it.flip() }
+        return findVisibleTreesInRow(treeColumn, columnNumber).map { it.swapRowAndColumn() }
     }
 
-    private fun columnToRow(treeGrid: List<String>, columnNumber: Int) =
-        treeGrid.map { treeRow -> treeRow[columnNumber] }.joinToString("")
-
-    fun countVisibleTrees(treeGrid: List<String>): Int {
-        val visibleFromSide = treeGrid.mapIndexed { i, it -> findVisibleTreesInRow(it, i) }.flatten().toSet()
+    private fun findVisibleTreesFromLeft(treeHeights: List<Int>, row: Int): Set<TreeHeight> {
+        var leftTreeColumn = 0
+        var rightTreeColumn = leftTreeColumn + 1
         val visibleTrees = mutableSetOf<TreeHeight>()
-        visibleTrees.addAll(visibleFromSide)
-        for (i in 0 until (treeGrid[0].length)) {
-            val visibleTreesInColumn = findVisibleTreesInColumn(treeGrid, i)
-            visibleTrees.addAll(visibleTreesInColumn)
+        while (rightTreeColumn < treeHeights.size) {
+            if (treeHeights[leftTreeColumn] < treeHeights[rightTreeColumn]) {
+                visibleTrees.add(TreeHeight(row, rightTreeColumn, treeHeights[rightTreeColumn]))
+                leftTreeColumn = rightTreeColumn
+                rightTreeColumn = leftTreeColumn + 1
+            } else {
+                rightTreeColumn++
+            }
         }
 
-        return visibleTrees.size
+        return visibleTrees
     }
 
-    fun scenicScoreOf(tree: TreeHeight, treeGrid: List<String>): Int {
-        val treeRow = tree.treeRow
-        val treeColumn = tree.treeColumn
-        val rowRight = treeGrid[treeRow].substring(treeColumn + 1)
-        val rowLeft = treeGrid[treeRow].substring(0, treeColumn).reversed()
-        val rowUp = columnToRow(treeGrid, treeColumn).substring(0, treeRow).reversed()
-        val rowDown = columnToRow(treeGrid, treeColumn).substring(treeRow + 1)
-        val treeHeight = tree.treeHeight
+    private fun findVisibleTreesFromRight(treeHeights: MutableList<Int>, row: Int): Set<TreeHeight> {
+        var rightTreeColumn = treeHeights.size - 1
+        var leftTreeColumn = rightTreeColumn - 1
+        val visibleTrees = mutableSetOf<TreeHeight>()
+        while (leftTreeColumn >= 0) {
+            if (treeHeights[rightTreeColumn] < treeHeights[leftTreeColumn]) {
+                visibleTrees.add(TreeHeight(row, leftTreeColumn, treeHeights[leftTreeColumn]))
+                rightTreeColumn = leftTreeColumn
+                leftTreeColumn = rightTreeColumn - 1
+            } else {
+                leftTreeColumn--
+            }
+        }
 
-        return scenicScoreOfRow(rowRight, treeHeight) *
-                scenicScoreOfRow(rowLeft, treeHeight) *
-                scenicScoreOfRow(rowUp, treeHeight) *
-                scenicScoreOfRow(rowDown, treeHeight)
-    }
-
-    private fun scenicScoreOfRow(treeRow: String, treeHeight: Int): Int {
-        val treeHeights = treeRow.split("").filter { it.isNotEmpty() }.map { it.toInt() }.toMutableList()
-        val numberOfBlockingTrees = treeHeights.indexOfFirst { it >= treeHeight }
-
-        return if (numberOfBlockingTrees == -1) treeHeights.size else numberOfBlockingTrees + 1
+        return visibleTrees
     }
 
     fun countScenicScores(treeGrid: List<String>): List<Int> {
         val scenicScores = mutableListOf<Int>()
-        treeGrid.forEachIndexed { rowIndex, treeRow ->
-            val treeHeights = treeRow.split("").filter { it.isNotEmpty() }.map { it.toInt() }.toMutableList()
-            treeHeights.forEachIndexed { columnIndex, treeHeight ->
-                scenicScores.add(scenicScoreOf(TreeHeight(rowIndex, columnIndex, treeHeight), treeGrid))
+        treeGrid.forEachIndexed { row, treeRow ->
+            val treeHeights = treeHeights(treeRow)
+            treeHeights.forEachIndexed { column, height ->
+                scenicScores.add(scenicScoreOf(TreeHeight(row, column, height), treeGrid))
             }
         }
 
         return scenicScores
     }
+
+    fun scenicScoreOf(tree: TreeHeight, treeGrid: List<String>): Int {
+        val treeRow = tree.treeRow
+        val treeColumn = tree.treeColumn
+        val rowRightOfTree = treeGrid[treeRow].substring(treeColumn + 1)
+        val rowLeftOfTree = treeGrid[treeRow].substring(0, treeColumn).reversed()
+        val rowAboveTree = columnToRow(treeGrid, treeColumn).substring(0, treeRow).reversed()
+        val rowBelowTree = columnToRow(treeGrid, treeColumn).substring(treeRow + 1)
+        val treeHeight = tree.treeHeight
+
+        return scenicScoreOfRow(rowRightOfTree, treeHeight) *
+                scenicScoreOfRow(rowLeftOfTree, treeHeight) *
+                scenicScoreOfRow(rowAboveTree, treeHeight) *
+                scenicScoreOfRow(rowBelowTree, treeHeight)
+    }
+
+    private fun scenicScoreOfRow(treeRow: String, treeHeight: Int): Int {
+        val treeHeights = treeHeights(treeRow)
+        val numberOfBlockingTrees = treeHeights.indexOfFirst { it >= treeHeight }
+
+        return if (numberOfBlockingTrees == -1) treeHeights.size else numberOfBlockingTrees + 1
+    }
+
+    private fun columnToRow(treeGrid: List<String>, columnNumber: Int) =
+        treeGrid.map { treeRow -> treeRow[columnNumber] }.joinToString("")
+
+    private fun treeHeights(treeRow: String) =
+        treeRow.split("").filter { it.isNotEmpty() }.map { it.toInt() }.toMutableList()
 }
 
 fun main() {

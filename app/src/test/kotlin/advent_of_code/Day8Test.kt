@@ -6,7 +6,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class Day8Test {
-    val day8 = Day8()
+    private val day8 = Day8()
 
     @Test
     fun canSatisfyResultFromSampleInput() {
@@ -71,8 +71,8 @@ class Day8Test {
 
     @Test
     fun treeHeightCoordsCanBeFlipped() {
-        assertEquals(TreeHeight(2, 1, 3), TreeHeight(1, 2, 3).flip())
-        assertEquals(TreeHeight(1, 2, 4), TreeHeight(2, 1, 4).flip())
+        assertEquals(TreeHeight(2, 1, 3), TreeHeight(1, 2, 3).swapRowAndColumn())
+        assertEquals(TreeHeight(1, 2, 4), TreeHeight(2, 1, 4).swapRowAndColumn())
     }
 
     @Test

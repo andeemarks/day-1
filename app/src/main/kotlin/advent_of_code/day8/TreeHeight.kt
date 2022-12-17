@@ -19,11 +19,11 @@ class TreeHeight(val treeRow: Int, val treeColumn: Int, val treeHeight: Int) {
         var result = treeRow
         result = 31 * result + treeColumn
         result = 31 * result + treeHeight
+
         return result
     }
 
-    fun flip(): TreeHeight {
+    fun swapRowAndColumn(): TreeHeight {
         return TreeHeight(treeColumn, treeRow, treeHeight)
     }
-
 }
