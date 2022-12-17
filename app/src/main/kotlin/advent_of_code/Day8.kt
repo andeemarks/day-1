@@ -1,55 +1,23 @@
 package advent_of_code
 
+import advent_of_code.day8.TreeHeight
 import java.io.File
 
-class TreeHeight(private val treeRow: Int, private val treeColumn: Int, private val treeHeight: Int) {
-    val value = Pair(Pair(treeColumn, treeRow), treeHeight)
-
-    override fun toString(): String {
-        return "@($treeRow,$treeColumn) $treeHeight"
-    }
-
-    override fun equals(other: Any?): Boolean {
-        val otherOne = other as TreeHeight
-
-        return treeRow == otherOne.treeRow &&
-                treeColumn == otherOne.treeColumn &&
-                treeHeight == otherOne.treeHeight
-    }
-
-    override fun hashCode(): Int {
-        var result = treeRow
-        result = 31 * result + treeColumn
-        result = 31 * result + treeHeight
-        return result
-    }
-
-    fun flip(): TreeHeight {
-        return TreeHeight(treeColumn, treeRow, treeHeight)
-    }
-
-}
-
 class Day8 {
-
-
     fun findVisibleTreesInRow(treeRow: String, rowIndex: Int = 0): List<TreeHeight> {
         val treeHeights = treeRow.split("").filter { it.isNotEmpty() }.map { it.toInt() }.toMutableList()
         val visibleTrees = mutableSetOf<TreeHeight>()
         visibleTrees.add(TreeHeight(rowIndex, 0, treeHeights.first()))
         visibleTrees.addAll(findVisibleTreesFromLeft(treeHeights, rowIndex))
         visibleTrees.addAll(findVisibleTreesFromRight(treeHeights, rowIndex))
-
-        if (treeHeights.size >= 2) {
-            visibleTrees.add(TreeHeight(rowIndex, treeHeights.size - 1, treeHeights.last()))
-        }
+        visibleTrees.add(TreeHeight(rowIndex, treeHeights.size - 1, treeHeights.last()))
 
         return visibleTrees.toMutableList()
     }
 
-    private fun findVisibleTreesFromLeft(treeHeights: MutableList<Int>, rowIndex: Int): MutableSet<TreeHeight> {
+    private fun findVisibleTreesFromLeft(treeHeights: List<Int>, rowIndex: Int): Set<TreeHeight> {
         var leftTreeIndex = 0
-        var rightTreeIndex = 1
+        var rightTreeIndex = leftTreeIndex + 1
         val visibleTrees = mutableSetOf<TreeHeight>()
         while (rightTreeIndex < treeHeights.size) {
             if (treeHeights[leftTreeIndex] < treeHeights[rightTreeIndex]) {
@@ -84,11 +52,13 @@ class Day8 {
     fun findVisibleTreesInColumn(treeGrid: List<String>, columnNumber: Int): List<TreeHeight> {
         require(columnNumber in 0 until (treeGrid[0].length))
 
-        val treeColumn = treeGrid.map { treeRow -> treeRow[columnNumber] }.joinToString("")
+        val treeColumn = columnToRow(treeGrid, columnNumber)
 
         return findVisibleTreesInRow(treeColumn, columnNumber).map { it.flip() }
     }
 
+    private fun columnToRow(treeGrid: List<String>, columnNumber: Int) =
+        treeGrid.map { treeRow -> treeRow[columnNumber] }.joinToString("")
 
     fun countVisibleTrees(treeGrid: List<String>): Int {
         val visibleFromSide = treeGrid.mapIndexed { i, it -> findVisibleTreesInRow(it, i) }.flatten().toSet()
@@ -100,6 +70,29 @@ class Day8 {
         }
 
         return visibleTrees.size
+    }
+
+    fun scenicScoreOf(tree: TreeHeight, treeGrid: List<String>): Int {
+        val treeRow = tree.treeRow
+        val treeColumn = tree.treeColumn
+        val rowRight = treeGrid[treeRow].substring(treeColumn + 1)
+        val rowLeft = treeGrid[treeRow].substring(0, treeColumn).reversed()
+        val rowUp = columnToRow(treeGrid, treeColumn).substring(0, treeRow).reversed()
+        val rowDown = columnToRow(treeGrid, treeColumn).substring(treeRow + 1)
+        val treeHeight = tree.treeHeight
+
+        return scenicScoreOfRow(rowRight, treeHeight) *
+                scenicScoreOfRow(rowLeft, treeHeight) *
+                scenicScoreOfRow(rowUp, treeHeight) *
+                scenicScoreOfRow(rowDown, treeHeight)
+    }
+
+    private fun scenicScoreOfRow(treeRow: String, treeHeight: Int): Int {
+        val treeHeights = treeRow.split("").filter { it.isNotEmpty() }.map { it.toInt() }.toMutableList()
+
+        val numberOfBlockingTrees = treeHeights.indexOfFirst { it >= treeHeight }
+
+        return if (numberOfBlockingTrees == -1) treeHeights.size else numberOfBlockingTrees + 1
     }
 }
 

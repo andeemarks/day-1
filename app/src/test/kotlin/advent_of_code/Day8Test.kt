@@ -1,5 +1,6 @@
 package advent_of_code
 
+import advent_of_code.day8.TreeHeight
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -72,5 +73,13 @@ class Day8Test {
     fun treeHeightCoordsCanBeFlipped() {
         assertEquals(TreeHeight(2, 1, 3), TreeHeight(1, 2, 3).flip())
         assertEquals(TreeHeight(1, 2, 4), TreeHeight(2, 1, 4).flip())
+    }
+
+    @Test
+    fun canCalculateScenicScoreOfATreeInAGrid() {
+        val grid = listOf("30373", "25512", "65332", "33549", "35390")
+
+        assertEquals(4, day8.scenicScoreOf(TreeHeight(1, 2, 5), grid))
+        assertEquals(8, day8.scenicScoreOf(TreeHeight(3, 2, 5), grid))
     }
 }
