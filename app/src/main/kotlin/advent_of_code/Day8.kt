@@ -89,10 +89,21 @@ class Day8 {
 
     private fun scenicScoreOfRow(treeRow: String, treeHeight: Int): Int {
         val treeHeights = treeRow.split("").filter { it.isNotEmpty() }.map { it.toInt() }.toMutableList()
-
         val numberOfBlockingTrees = treeHeights.indexOfFirst { it >= treeHeight }
 
         return if (numberOfBlockingTrees == -1) treeHeights.size else numberOfBlockingTrees + 1
+    }
+
+    fun countScenicScores(treeGrid: List<String>): List<Int> {
+        val scenicScores = mutableListOf<Int>()
+        treeGrid.forEachIndexed { rowIndex, treeRow ->
+            val treeHeights = treeRow.split("").filter { it.isNotEmpty() }.map { it.toInt() }.toMutableList()
+            treeHeights.forEachIndexed { columnIndex, treeHeight ->
+                scenicScores.add(scenicScoreOf(TreeHeight(rowIndex, columnIndex, treeHeight), treeGrid))
+            }
+        }
+
+        return scenicScores
     }
 }
 
@@ -101,6 +112,5 @@ fun main() {
     val app = Day8()
 
     println("Number of visible trees: ${app.countVisibleTrees(treeGrid)}")
-
-
+    println("Best scenic score: ${app.countScenicScores(treeGrid).maxOrNull()}")
 }
